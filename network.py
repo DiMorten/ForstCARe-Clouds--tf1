@@ -339,7 +339,7 @@ def pix2pix_discriminator(self, img_A, img_B, y=None, reuse=False, is_train=True
 
 # -------------------------------------
 # from spectral_normalization import SpectralNormalization
-from SpectralNormalizationKeras import DenseSN, ConvSN2D
+# from SpectralNormalizationKeras import DenseSN, ConvSN2D
 from tensorflow.keras.layers import Conv2D, BatchNormalization, LeakyReLU, Activation
 from tensorflow.keras.initializers import RandomNormal
 
@@ -351,10 +351,8 @@ def encoder_block(input_data, n_filters, k_size=3, strides=2, activation='None',
     # if spectralnorm:
     #     conv2d = SpectralNormalization(conv2d)
     # x = conv2d(input_data)
-    if spectralnorm:
-        x = ConvSN2D(n_filters, k_size, strides=strides, padding=padding, kernel_initializer=init, name=name+'_convSN2D')(input_data)
-    else:
-        x = Conv2D(n_filters, k_size, strides=strides, padding=padding, kernel_initializer=init, name=name+'_conv2D')(input_data)
+
+    x = Conv2D(n_filters, k_size, strides=strides, padding=padding, kernel_initializer=init, name=name+'_conv2D')(input_data)
 
     if batchnorm:
         x = BatchNormalization(momentum=0.8, name=name+'_bn')(x, training=is_training)

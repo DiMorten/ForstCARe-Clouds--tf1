@@ -22,7 +22,7 @@ from utils import *
 import network
 import sys
 slim = tf.contrib.slim
-from sen12ms_cr_dataLoader import *
+# from sen12ms_cr_dataLoader import *
 
 import multiprocessing
 from functools import partial
@@ -101,6 +101,7 @@ class cGAN(object):
 
         self.checkpoint_dir = checkpoint_dir
         self.visible_bands = [2, 1, 0]
+        self.dataset_name = args.dataset_name
         self.build_model()
         # self.norm_routine = Clip_Norm_sen12mscr(feature_range=[-1, 1])
 
