@@ -15,11 +15,11 @@ Schedule = []
 #                                 --patch_overlap 0.0 --date both\
 #                                 --checkpoint_dir ./checkpoint --sample_dir ./sample --test_dir ./test")
 
-Schedule.append("python main.py --generator deeplab --discriminator atrous --phase train \
-                                --batch_size 2 --epoch 60 --dataset_name MG_10m \
-                                --datasets_dir ../../Datasets/ --image_size_tr 256 --output_stride 16 \
-                                --patch_overlap 0.35 --date both\
-                                --checkpoint_dir ./checkpoint --sample_dir ./sample --test_dir ./test")
+# Schedule.append("python main.py --generator deeplab --discriminator atrous --phase train \
+#                                 --batch_size 2 --epoch 60 --dataset_name MG_10m \
+#                                 --datasets_dir ../../Datasets/ --image_size_tr 256 --output_stride 16 \
+#                                 --patch_overlap 0.35 --date both\
+#                                 --checkpoint_dir ./checkpoint --sample_dir ./sample --test_dir ./test")
 
 # Schedule.append("python main.py --generator deeplab --discriminator atrous --phase generate_complete_image \
 #                                 --batch_size 2 --epoch 60 --dataset_name MG_10m \
@@ -50,17 +50,17 @@ Schedule.append("python main.py --generator deeplab --discriminator atrous --pha
 #                                 --patch_overlap 0.0 --date both\
 #                                 --checkpoint_dir ./checkpoint --sample_dir ./sample --test_dir ./test")
 
-# Schedule.append("python main.py --generator deeplab --discriminator atrous --phase train \
-#                                 --batch_size 2 --epoch 60 --dataset_name Para_10m \
-#                                 --datasets_dir ../../Datasets/ --image_size_tr 256 --output_stride 16 \
-#                                 --patch_overlap 0.4 --date both\
-#                                 --checkpoint_dir ./checkpoint --sample_dir ./sample --test_dir ./test")
+Schedule.append("python main.py --generator deeplab --discriminator atrous --phase train \
+                                --batch_size 2 --epoch 60 --dataset_name Santarem \
+                                --datasets_dir E:/Jorge/dataset/ --image_size_tr 256 --output_stride 16 \
+                                --patch_overlap 0.4 --date both\
+                                --checkpoint_dir ./checkpoint --sample_dir ./sample --test_dir ./test")
 
-# Schedule.append("python main.py --generator deeplab --discriminator atrous --phase generate_complete_image \
-#                                 --batch_size 2 --epoch 60 --dataset_name Para_10m \
-#                                 --datasets_dir ../../Datasets/ --image_size_tr 256 --output_stride 16 \
-#                                 --patch_overlap 0.4 --date both\
-#                                 --checkpoint_dir ./checkpoint --sample_dir ./sample --test_dir ./test")
+Schedule.append("python main.py --generator deeplab --discriminator atrous --phase generate_complete_image \
+                                --batch_size 2 --epoch 60 --dataset_name Santarem \
+                                --datasets_dir E:/Jorge/dataset/ --image_size_tr 256 --output_stride 16 \
+                                --patch_overlap 0.4 --date both\
+                                --checkpoint_dir ./checkpoint --sample_dir ./sample --test_dir ./test")
 
 # Schedule.append("python main.py --phase GEE_metrics --dataset_name Para_10m --test_dir ./test")
 # Schedule.append("python main.py --phase Meraner_metrics --dataset_name Para_10m --test_dir ./test")

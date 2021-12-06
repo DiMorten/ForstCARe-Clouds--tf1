@@ -203,6 +203,33 @@ class cGAN(object):
             self.labels_name = '/ref_2019_2020_20798x13420'
 
             self.mask_tr_vl_ts_name = '/MT_tr_0_val_1_ts_2_16795x10420_new'
+        elif args.dataset_name == 'Santarem':
+            self.lims = np.array([0, 9676, 0, 10540])
+            self.sar_path = args.datasets_dir + args.dataset_name + '/S1/'
+            self.opt_path = args.datasets_dir + args.dataset_name + '/S2/'
+            self.opt_cloudy_path = args.datasets_dir + args.dataset_name + '/S2_cloudy/'
+            self.labels_path = args.datasets_dir + args.dataset_name
+
+            self.sar_name_t0 = ['2020/S1_NS_2020_08_08_08_13_VV_VH']
+            self.opt_name_t0 = ['2020/S2_R5_ST_2020_08_09_B1_B7',
+                                '2020/S2_R5_ST_2020_08_09_B8_B12']
+            self.opt_cloudy_name_t0 = ['2020/S2_CL_R5_ST_2020_08_24_B1_B7',
+                                       '2020/S2_CL_R5_ST_2020_08_24_B8_B12']
+            self.opt_cloudmask_name_t0 = '2019/cloudmask_s2_2019_MG'
+            self.opt_cloudy_cloudmask_name_t0 = '2019/cloudmask_s2_cloudy_2019_MG'
+
+            self.sar_name_t1 = ['2021/S1_NS_2021_07_22_07_27_VV_VH']
+            self.opt_name_t1 = ['2021/S2_R5_ST_2021_07_25_B1_B7',
+                                '2021/S2_R5_ST_2021_07_25_B8_B12']
+            self.opt_cloudy_name_t1 = ['2021/S2_CL_R5_ST_2021_07_30_B1_B7',
+                                       '2021/S2_CL_R5_ST_2021_07_30_B8_B12']
+            self.opt_cloudmask_name_t1 = '2020/cloudmask_s2_2020_MG'
+            self.opt_cloudy_cloudmask_name_t1 = '2020/cloudmask_s2_cloudy_2020_MG'
+
+
+            self.labels_name = '/mask_label_17730x9203'
+
+            self.mask_tr_vl_ts_name = '/tr_0_val_1_ts_2_9676x10540'            
 
     def build_model(self):
 
