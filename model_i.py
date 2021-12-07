@@ -216,16 +216,16 @@ class cGAN(object):
                                 '2020/S2_R5_ST_2020_08_09_B8_B12']
             self.opt_cloudy_name_t0 = ['2020/S2_CL_R5_ST_2020_08_24_B1_B7',
                                        '2020/S2_CL_R5_ST_2020_08_24_B8_B12']
-            self.opt_cloudmask_name_t0 = '2019/cloudmask_s2_2019_MG'
-            self.opt_cloudy_cloudmask_name_t0 = '2019/cloudmask_s2_cloudy_2019_MG'
+            self.opt_cloudmask_name_t0 = '2020/cloudmask_t0'
+            self.opt_cloudy_cloudmask_name_t0 = '2020/cloudmask_cloudy_t0'
 
             self.sar_name_t1 = ['2021/S1_NS_2021_07_22_07_27_VV_VH']
             self.opt_name_t1 = ['2021/S2_R5_ST_2021_07_25_B1_B7',
                                 '2021/S2_R5_ST_2021_07_25_B8_B12']
             self.opt_cloudy_name_t1 = ['2021/S2_CL_R5_ST_2021_07_30_B1_B7',
                                        '2021/S2_CL_R5_ST_2021_07_30_B8_B12']
-            self.opt_cloudmask_name_t1 = '2020/cloudmask_s2_2020_MG'
-            self.opt_cloudy_cloudmask_name_t1 = '2020/cloudmask_s2_cloudy_2020_MG'
+            self.opt_cloudmask_name_t1 = '2021/cloudmask_t1'
+            self.opt_cloudy_cloudmask_name_t1 = '2021/cloudmask_cloudy_t1'
 
 
             self.labels_name = '/mask_label_17730x9203'
@@ -395,7 +395,8 @@ class cGAN(object):
         else:
             print(" [!] Load failed...")
 
-        idx = 1500
+#        idx = 1500
+        idx = 500
         generate_samples(self, output_path=sample_dir, idx=idx, 
                          patch_list = val_patches, epoch=counter, real_flag = True)
         

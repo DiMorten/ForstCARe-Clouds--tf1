@@ -404,6 +404,8 @@ def create_dataset_coordinates(obj, prefix = 0, padding=True,
             else:
                 opt = img
         del img
+        # np.save('s2' + '.npy', opt)
+
         opt = opt[[1, 2, 3, 4, 5, 6, 7, 8, 11, 12], :, :]
         opt = opt.transpose([1, 2, 0])
         if cut:
@@ -654,7 +656,7 @@ def Data_augmentation(s1, s2, s2_cloudy,
 def Take_patches(patch_list, idx, data_dic,
                  fine_size=256,
                  random_crop_transformation=False):
-
+#    print(idx, len(patch_list))
     sar = data_dic['sar_t' + str(patch_list[idx][0])] \
                   [patch_list[idx][1]:patch_list[idx][1]+fine_size,
                    patch_list[idx][2]:patch_list[idx][2]+fine_size, :]
