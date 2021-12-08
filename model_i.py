@@ -21,9 +21,10 @@ from utils import *
 #####___No@___#####
 import network
 import sys
+import pdb
 slim = tf.contrib.slim
 # from sen12ms_cr_dataLoader import *
-
+from icecream import ic
 import multiprocessing
 from functools import partial
 n_cores = multiprocessing.cpu_count()
@@ -204,8 +205,8 @@ class cGAN(object):
             self.labels_name = '/ref_2019_2020_20798x13420'
 
             self.mask_tr_vl_ts_name = '/MT_tr_0_val_1_ts_2_16795x10420_new'
-        elif args.dataset_name == 'Santarem':
-            self.lims = np.array([0, 9676, 0, 10540])
+        elif args.dataset_name == 'Santarem' or args.dataset_name == 'Santarem_I1' or args.dataset_name == 'Santarem_I2' or args.dataset_name == 'Santarem_I3' or args.dataset_name == 'Santarem_I4' or args.dataset_name == 'Santarem_I5':
+            self.lims = np.array([0, 9675, 0, 10540])
             self.sar_path = args.datasets_dir + args.dataset_name + '/S1/'
             self.opt_path = args.datasets_dir + args.dataset_name + '/S2/'
             self.opt_cloudy_path = args.datasets_dir + args.dataset_name + '/S2_cloudy/'
@@ -231,6 +232,39 @@ class cGAN(object):
             self.labels_name = '/mask_label_17730x9203'
 
             self.mask_tr_vl_ts_name = '/tr_0_val_1_ts_2_9676x10540'            
+
+
+        if args.dataset_name == 'Santarem_I1':
+            self.sar_name_t0 = ['2020/S1_R5_NS1_2020_12_09_10_VV',
+                                '2020/S1_R5_NS1_2020_12_09_10_VH']
+
+            self.opt_cloudy_name_t0 = ['2020/S2_CL_R5_NS1_2020_10_13_B1_B7',
+                                       '2020/S2_CL_R5_NS1_2020_10_13_B8_B12']
+        elif args.dataset_name == 'Santarem_I2':
+            self.sar_name_t0 = ['2020/S1_R5_NS2_2020_12_18_23_VV',
+                                '2020/S1_R5_NS2_2020_12_18_23_VH']
+
+            self.opt_cloudy_name_t0 = ['2020/S2_CL_R5_NS2_2020_12_17_B1_B7',
+                                       '2020/S2_CL_R5_NS2_2020_12_17_B8_B12']
+
+        elif args.dataset_name == 'Santarem_I3':
+            self.sar_name_t0 = ['2020/S1_R5_NS3_2021_02_09_16_VV',
+                                '2020/S1_R5_NS3_2021_02_09_16_VH']
+
+            self.opt_cloudy_name_t0 = ['2020/S2_CL_R5_NS3_2021_02_10_B1_B7',
+                                       '2020/S2_CL_R5_NS3_2021_02_10_B8_B12']
+        elif args.dataset_name == 'Santarem_I4':
+            self.sar_name_t0 = ['2020/S1_R5_NS4_2021_04_10_17_VV',
+                                '2020/S1_R5_NS4_2021_04_10_17_VH']
+
+            self.opt_cloudy_name_t0 = ['2020/S2_CL_R5_NS4_2021_04_11_B1_B7',
+                                       '2020/S2_CL_R5_NS4_2021_04_11_B8_B12']
+        elif args.dataset_name == 'Santarem_I5':
+            self.sar_name_t0 = ['2020/S1_R5_NS5_2021_06_09_16_VV',
+                                '2020/S1_R5_NS5_2021_06_09_16_VH']
+
+            self.opt_cloudy_name_t0 = ['2020/S2_CL_R5_NS5_2021_06_10_B1_B7',
+                                       '2020/S2_CL_R5_NS5_2021_06_10_B8_B12']
 
     def build_model(self):
 
@@ -316,6 +350,7 @@ class cGAN(object):
         """Train cGAN"""
 
         # Model
+
         model_dir = os.path.join(self.checkpoint_dir, self.model, args.dataset_name)
         sample_dir = os.path.join(model_dir, 'samples')
         if not os.path.exists(sample_dir):
@@ -498,7 +533,11 @@ class cGAN(object):
         if not os.path.exists(output_path):
             os.makedirs(output_path)
 
-        model_dir = os.path.join(self.checkpoint_dir, self.model, args.dataset_name)
+        if args.dataset_name == 'Santarem_I1' or args.dataset_name == 'Santarem_I2' or args.dataset_name == 'Santarem_I3' or args.dataset_name == 'Santarem_I4' or args.dataset_name == 'Santarem_I5':
+            model_dataset_name = 'Santarem'
+        else:
+            model_dataset_name = args.dataset_name
+        model_dir = os.path.join(self.checkpoint_dir, self.model, model_dataset_name)
         mod = self.load(model_dir)
         if mod:
             print(" [*] Load SUCCESS")
@@ -507,8 +546,8 @@ class cGAN(object):
             return
 
         # Loading normalizers used during training
-        self.sar_norm = joblib.load(self.args.datasets_dir + self.args.dataset_name  + '/' + 'sar_norm.pkl')
-        self.opt_norm = joblib.load(self.args.datasets_dir + self.args.dataset_name  + '/' + 'opt_norm.pkl')
+        self.sar_norm = joblib.load(self.args.datasets_dir + model_dataset_name  + '/' + 'sar_norm.pkl')
+        self.opt_norm = joblib.load(self.args.datasets_dir + model_dataset_name  + '/' + 'opt_norm.pkl')
 
         if date is "t0":
             opt_cloudy_cloudmask_name = self.opt_cloudy_cloudmask_name_t0
@@ -525,6 +564,8 @@ class cGAN(object):
 
         # Loading masks
         mask_tr_vl_ts = Split_Image(self, random_tiles='fixed')
+        ic(mask_tr_vl_ts.shape)
+
         opt_cloudy_cloudmask = np.load(self.opt_cloudy_path + opt_cloudy_cloudmask_name + '.npy')
         opt_cloudy_cloudmask = opt_cloudy_cloudmask[:mask_tr_vl_ts.shape[0], :mask_tr_vl_ts.shape[1]]
         test_mask, mask_cloud_free, \
@@ -545,6 +586,8 @@ class cGAN(object):
         img = Image.fromarray(np.uint8((mask_cloud_free)*255))
         img.save(output_path + '/test_mask_cloud_free_' + date + '.tiff')
 
+        ic(mask_cloud.shape, mask_cloud_free.shape, test_mask.shape, self.lims)
+        #pdb.set_trace()
 
         # ====================== LOAD DATA =====================
         # Loading images

@@ -111,7 +111,7 @@ if __name__ == '__main__':
 
     dataset_name = 'Santarem'
     datasets_dir = 'E:/Jorge/dataset/'
-    if dataset_name == 'Santarem':
+    if dataset_name == 'Santarem' or dataset_name == 'Santarem_I1' or dataset_name == 'Santarem_I2' or dataset_name == 'Santarem_I3' or dataset_name == 'Santarem_I4' or dataset_name == 'Santarem_I5':
         
         opt_path = datasets_dir + dataset_name + '/S2/'
         opt_cloudy_path = datasets_dir + dataset_name + '/S2_cloudy/'

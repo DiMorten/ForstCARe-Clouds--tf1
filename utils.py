@@ -33,6 +33,8 @@ from functools import partial
 from osgeo import gdal
 #from sen12ms_cr_dataLoader import *
 import rasterio
+from icecream import ic
+import pdb
 pp = pprint.PrettyPrinter()
 
 get_stddev = lambda x, k_h, k_w: 1/math.sqrt(k_w*k_h*x.get_shape()[-1])
@@ -256,9 +258,16 @@ def Split_Image(obj, rows=1000, cols=1000, no_tiles_h=5, no_tiles_w=5, random_ti
 
     elif random_tiles == 'fixed':
         # Distribute the tiles from a mask
-        mask  = np.load(obj.args.datasets_dir + obj.args.dataset_name + obj.mask_tr_vl_ts_name + '.npy')
+        #ic(obj.args.datasets_dir + obj.args.dataset_name + obj.mask_tr_vl_ts_name + '.npy')
+        if obj.args.dataset_name == 'Santarem_I1' or obj.args.dataset_name == 'Santarem_I2' or obj.args.dataset_name == 'Santarem_I3' or obj.args.dataset_name == 'Santarem_I4' or obj.args.dataset_name == 'Santarem_I5':
+            model_dataset_name = 'Santarem'
+        else:
+            model_dataset_name = obj.args.dataset_name        
+        mask  = np.load(obj.args.datasets_dir + model_dataset_name + obj.mask_tr_vl_ts_name + '.npy')
+        #ic(mask.shape)
+        #pdb.set_trace()
         img = Image.fromarray(np.uint8((mask/2)*255))
-        img.save(obj.args.datasets_dir + obj.args.dataset_name + obj.mask_tr_vl_ts_name + '.tiff')
+        img.save(obj.args.datasets_dir + model_dataset_name + obj.mask_tr_vl_ts_name + '.tiff')
     
     return mask
 
@@ -372,6 +381,7 @@ def create_dataset_coordinates(obj, prefix = 0, padding=True,
     # Sentinel 1
     if flag_image[0]:
         if obj.dataset_name != 'Santarem':
+#        if obj.dataset_name == "SEN2MS-CR" or obj.dataset_name == "Para_10m" or obj.dataset_name == "MG_10m": 
             sar_vv = load_tiff_image(obj.sar_path + obj.sar_name[0] + '.tif').astype('float32')
             sar_vh = load_tiff_image(obj.sar_path + obj.sar_name[1] + '.tif').astype('float32')
             sar = np.concatenate((np.expand_dims(sar_vv, 2), np.expand_dims(sar_vh, 2)), axis=2)
@@ -1038,8 +1048,12 @@ def SSIM(y_true, y_pred):
 def METRICS(y_true, y_pred, mask=None, ssim_flag=False, dataset="Para_10m"):
 
     if ssim_flag:
-        no_tiles_h = 5
-        no_tiles_w = 4
+        if dataset == 'Santarem' or dataset == 'Santarem_I1' or dataset == 'Santarem_I2' or dataset == 'Santarem_I3' or dataset == 'Santarem_I4' or dataset == 'Santarem_I5':            
+            no_tiles_h = 5
+            no_tiles_w = 5
+        else:
+            no_tiles_h = 5
+            no_tiles_w = 4
     
         rows, cols, _ = y_true.shape 
         xsz = rows // no_tiles_h
@@ -1058,6 +1072,8 @@ def METRICS(y_true, y_pred, mask=None, ssim_flag=False, dataset="Para_10m"):
                 test_tiles = [1, 3, 6, 8, 9, 11, 14, 15, 16, 17]
             elif dataset == "MG_10m":
                 test_tiles = [0, 2, 6, 7, 8, 9, 11, 13, 14, 16]
+            elif dataset == "Santarem" or dataset == 'Santarem_I1' or dataset == 'Santarem_I2' or dataset == 'Santarem_I3' or dataset == 'Santarem_I4' or dataset == 'Santarem_I5':
+                test_tiles = [0,2,6,8,12,13,15,16,19,21,22,23]
 
             ssim = []
             for i in test_tiles:
