@@ -28,7 +28,7 @@ from icecream import ic
 import multiprocessing
 from functools import partial
 n_cores = multiprocessing.cpu_count()
-
+ic.configureOutput(includeContext=True)
 #####_________#####
 
 
@@ -240,32 +240,41 @@ class cGAN(object):
 
             self.opt_cloudy_name_t0 = ['2020/S2_CL_R5_NS1_2020_10_13_B1_B7',
                                        '2020/S2_CL_R5_NS1_2020_10_13_B8_B12']
+
+            self.opt_name_t0 = ['../../Santarem/S2/2020/S2_R5_ST_2020_08_09_B1_B7',
+                                '../../Santarem/S2/2020/S2_R5_ST_2020_08_09_B8_B12']
         elif args.dataset_name == 'Santarem_I2':
             self.sar_name_t0 = ['2020/S1_R5_NS2_2020_12_18_23_VV',
                                 '2020/S1_R5_NS2_2020_12_18_23_VH']
 
             self.opt_cloudy_name_t0 = ['2020/S2_CL_R5_NS2_2020_12_17_B1_B7',
                                        '2020/S2_CL_R5_NS2_2020_12_17_B8_B12']
-
+            self.opt_name_t0 = ['../../Santarem/S2/2020/S2_R5_ST_2020_08_09_B1_B7',
+                                '../../Santarem/S2/2020/S2_R5_ST_2020_08_09_B8_B12']
         elif args.dataset_name == 'Santarem_I3':
             self.sar_name_t0 = ['2020/S1_R5_NS3_2021_02_09_16_VV',
                                 '2020/S1_R5_NS3_2021_02_09_16_VH']
 
             self.opt_cloudy_name_t0 = ['2020/S2_CL_R5_NS3_2021_02_10_B1_B7',
                                        '2020/S2_CL_R5_NS3_2021_02_10_B8_B12']
+            self.opt_name_t0 = ['../../Santarem/S2/2020/S2_R5_ST_2020_08_09_B1_B7',
+                                '../../Santarem/S2/2020/S2_R5_ST_2020_08_09_B8_B12']                                       
         elif args.dataset_name == 'Santarem_I4':
             self.sar_name_t0 = ['2020/S1_R5_NS4_2021_04_10_17_VV',
                                 '2020/S1_R5_NS4_2021_04_10_17_VH']
 
             self.opt_cloudy_name_t0 = ['2020/S2_CL_R5_NS4_2021_04_11_B1_B7',
                                        '2020/S2_CL_R5_NS4_2021_04_11_B8_B12']
+            self.opt_name_t0 = ['../../Santarem/S2/2020/S2_R5_ST_2020_08_09_B1_B7',
+                                '../../Santarem/S2/2020/S2_R5_ST_2020_08_09_B8_B12']                                       
         elif args.dataset_name == 'Santarem_I5':
             self.sar_name_t0 = ['2020/S1_R5_NS5_2021_06_09_16_VV',
                                 '2020/S1_R5_NS5_2021_06_09_16_VH']
 
             self.opt_cloudy_name_t0 = ['2020/S2_CL_R5_NS5_2021_06_10_B1_B7',
                                        '2020/S2_CL_R5_NS5_2021_06_10_B8_B12']
-
+            self.opt_name_t0 = ['../../Santarem/S2/2020/S2_R5_ST_2020_08_09_B1_B7',
+                                '../../Santarem/S2/2020/S2_R5_ST_2020_08_09_B8_B12']
     def build_model(self):
 
         # Picking up the generator and discriminator
@@ -594,7 +603,9 @@ class cGAN(object):
         _, _, _, self.data_dic, _, _, = create_dataset_coordinates(self, prefix = prefix, padding=False,
                                                                    flag_image = [1, 0, 1], cut=False)        
         sar = self.sar_norm.Normalize(self.data_dic["sar_" + date])
+        ic(np.min(self.data_dic["opt_cloudy_" + date]), np.max(self.data_dic["opt_cloudy_" + date]))
         opt_cloudy = self.opt_norm.Normalize(self.data_dic["opt_cloudy_" + date])
+        ic(np.min(opt_cloudy), np.max(opt_cloudy))
         del self.data_dic
 
         start_time = time.time()
@@ -602,53 +613,59 @@ class cGAN(object):
         # opt_fake = self.sess.run(self.fake_opt_t0_sample,
         #                         feed_dict={self.SAR: sar[np.newaxis, ...],
         #                                 self.OPT_cloudy: opt_cloudy[np.newaxis, ...]})
-        opt_fake = Image_reconstruction([self.SAR, self.OPT_cloudy], self.fake_opt_t0_sample, 
-                                        self.output_c_dim, patch_size=3840, 
-                                        overlap_percent=0.02).Inference(np.concatenate((sar, opt_cloudy), axis=2))
+        fake_get = False
+        if fake_get == True:
+            opt_fake = Image_reconstruction([self.SAR, self.OPT_cloudy], self.fake_opt_t0_sample, 
+                                            self.output_c_dim, patch_size=3840, 
+                                            overlap_percent=0.02).Inference(np.concatenate((sar, opt_cloudy), axis=2))
         print("Inference complete --> {} segs".format(time.time()-start_time))
         del sar
         # 4096, 3840
+        ic(np.min(opt_cloudy), np.max(opt_cloudy))
         opt_cloudy = self.opt_norm.Denormalize(opt_cloudy)
+        ic(np.min(opt_cloudy), np.max(opt_cloudy))
+
         print("Saving opt_cloudy image")
         GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix] + '.tif', 
                                              opt_cloudy.transpose(2, 0, 1),
                                              output_path + '/S2_cloudy_' + date + '_10bands.tif')
+        print("Finished saving opt_cloudy image")
         del opt_cloudy
+        if fake_get == True:
+            opt_fake = self.opt_norm.Denormalize(opt_fake)
+            print("Saving opt_fake image")
+            GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix] + '.tif', 
+                                                opt_fake.transpose(2, 0, 1),
+                                                output_path + '/S2_' + date + '_10bands' + '_Fake_.tif')
+            np.save(output_path + '/S2_' + date + '_10bands' + '_Fake_', opt_fake)
 
-        opt_fake = self.opt_norm.Denormalize(opt_fake)
-        print("Saving opt_fake image")
-        GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix] + '.tif', 
-                                             opt_fake.transpose(2, 0, 1),
-                                             output_path + '/S2_' + date + '_10bands' + '_Fake_.tif')
-        np.save(output_path + '/S2_' + date + '_10bands' + '_Fake_', opt_fake)
 
+            # Loading Free-cloud image
+            _, _, _, self.data_dic, _, _, = create_dataset_coordinates(self, prefix = prefix, padding=False,
+                                                                    flag_image = [0, 1, 0], cut=False)
+            opt = self.opt_norm.clip_image(self.data_dic["opt_" + date])
+            del self.data_dic
+            print("Saving opt_cloudy image")
+            GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix] + '.tif', 
+                                                opt.transpose(2, 0, 1),
+                                                output_path + '/S2_' + date + '_10bands.tif')
 
-        # Loading Free-cloud image
-        _, _, _, self.data_dic, _, _, = create_dataset_coordinates(self, prefix = prefix, padding=False,
-                                                                   flag_image = [0, 1, 0], cut=False)
-        opt = self.opt_norm.clip_image(self.data_dic["opt_" + date])
-        del self.data_dic
-        print("Saving opt_cloudy image")
-        GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix] + '.tif', 
-                                             opt.transpose(2, 0, 1),
-                                             output_path + '/S2_' + date + '_10bands.tif')
+            ########### METRICS ##################
+            opt =           opt[self.lims[0]:self.lims[1], self.lims[2]:self.lims[3],:]
+            opt_fake = opt_fake[self.lims[0]:self.lims[1], self.lims[2]:self.lims[3],:]
 
-        ########### METRICS ##################
-        opt =           opt[self.lims[0]:self.lims[1], self.lims[2]:self.lims[3],:]
-        opt_fake = opt_fake[self.lims[0]:self.lims[1], self.lims[2]:self.lims[3],:]
+            with open(output_path + '/' + 'Similarity_Metrics.txt', 'a') as f:
+                # test area (cloudy)
+                mae, mse, rmse, psnr, sam, ssim = METRICS(opt, opt_fake, mask_cloud)
+                Write_metrics_on_file(f, "Metrics " + date + "-- Test area(cloudy)", mae, mse, rmse, psnr, sam, ssim)
+                # test area (cloud-free)
+                mae, mse, rmse, psnr, sam, ssim = METRICS(opt, opt_fake, mask_cloud_free)
+                Write_metrics_on_file(f, "Metrics " + date + "-- Test area(cloud-free)", mae, mse, rmse, psnr, sam, ssim)
+                # test area
+                mae, mse, rmse, psnr, sam, ssim = METRICS(opt, opt_fake, test_mask, ssim_flag=True, dataset=args.dataset_name)
+                Write_metrics_on_file(f, "Metrics " + date + "-- Test area", mae, mse, rmse, psnr, sam, ssim)
 
-        with open(output_path + '/' + 'Similarity_Metrics.txt', 'a') as f:
-            # test area (cloudy)
-            mae, mse, rmse, psnr, sam, ssim = METRICS(opt, opt_fake, mask_cloud)
-            Write_metrics_on_file(f, "Metrics " + date + "-- Test area(cloudy)", mae, mse, rmse, psnr, sam, ssim)
-            # test area (cloud-free)
-            mae, mse, rmse, psnr, sam, ssim = METRICS(opt, opt_fake, mask_cloud_free)
-            Write_metrics_on_file(f, "Metrics " + date + "-- Test area(cloud-free)", mae, mse, rmse, psnr, sam, ssim)
-            # test area
-            mae, mse, rmse, psnr, sam, ssim = METRICS(opt, opt_fake, test_mask, ssim_flag=True, dataset=args.dataset_name)
-            Write_metrics_on_file(f, "Metrics " + date + "-- Test area", mae, mse, rmse, psnr, sam, ssim)
-
-        del opt, opt_fake
+            del opt, opt_fake
 
     def Meraner_metrics(self, args, date):
 

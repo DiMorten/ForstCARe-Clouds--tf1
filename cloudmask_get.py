@@ -109,7 +109,10 @@ def load_tiff_image(path):
 
 if __name__ == '__main__':
 
-    dataset_name = 'Santarem'
+    dataset_name = 'Santarem_I2'
+    t = 't0'
+    cloudy_flag = True
+
     datasets_dir = 'E:/Jorge/dataset/'
     if dataset_name == 'Santarem' or dataset_name == 'Santarem_I1' or dataset_name == 'Santarem_I2' or dataset_name == 'Santarem_I3' or dataset_name == 'Santarem_I4' or dataset_name == 'Santarem_I5':
         
@@ -128,7 +131,29 @@ if __name__ == '__main__':
         opt_cloudy_name_t1 = ['2021/S2_CL_R5_ST_2021_07_30_B1_B7',
                                     '2021/S2_CL_R5_ST_2021_07_30_B8_B12']
 
-    t = 't1'
+        if dataset_name == 'Santarem_I1':
+            
+            opt_cloudy_name_t0 = ['2020/S2_CL_R5_NS1_2020_10_13_B1_B7',
+                                       '2020/S2_CL_R5_NS1_2020_10_13_B8_B12']
+        elif dataset_name == 'Santarem_I2':
+            
+            opt_cloudy_name_t0 = ['2020/S2_CL_R5_NS2_2020_12_17_B1_B7',
+                                       '2020/S2_CL_R5_NS2_2020_12_17_B8_B12']
+
+        elif dataset_name == 'Santarem_I3':
+            
+            opt_cloudy_name_t0 = ['2020/S2_CL_R5_NS3_2021_02_10_B1_B7',
+                                       '2020/S2_CL_R5_NS3_2021_02_10_B8_B12']
+        elif dataset_name == 'Santarem_I4':
+            
+            opt_cloudy_name_t0 = ['2020/S2_CL_R5_NS4_2021_04_11_B1_B7',
+                                       '2020/S2_CL_R5_NS4_2021_04_11_B8_B12']
+        elif dataset_name == 'Santarem_I5':
+            
+            opt_cloudy_name_t0 = ['2020/S2_CL_R5_NS5_2021_06_10_B1_B7',
+                                       '2020/S2_CL_R5_NS5_2021_06_10_B8_B12']
+
+    
     if t == 't0':
         opt_name = opt_name_t0
         opt_cloudy_name = opt_cloudy_name_t0
@@ -136,7 +161,6 @@ if __name__ == '__main__':
         opt_name = opt_name_t1
         opt_cloudy_name = opt_cloudy_name_t1
 
-    cloudy_flag = False
     if cloudy_flag == False:
         name_id = ''
         for i in range(len(opt_name)):
