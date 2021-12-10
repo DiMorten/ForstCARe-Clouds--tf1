@@ -380,15 +380,20 @@ def create_dataset_coordinates(obj, prefix = 0, padding=True,
 
     # Sentinel 1
     if flag_image[0]:
+        sar_vv = load_tiff_image(obj.sar_path + obj.sar_name[0] + '.tif').astype('float32')
+        sar_vh = load_tiff_image(obj.sar_path + obj.sar_name[1] + '.tif').astype('float32')
+        sar = np.concatenate((np.expand_dims(sar_vv, 2), np.expand_dims(sar_vh, 2)), axis=2)
+        del sar_vh, sar_vv
+        '''
         if obj.dataset_name != 'Santarem':
-#        if obj.dataset_name == "SEN2MS-CR" or obj.dataset_name == "Para_10m" or obj.dataset_name == "MG_10m": 
             sar_vv = load_tiff_image(obj.sar_path + obj.sar_name[0] + '.tif').astype('float32')
             sar_vh = load_tiff_image(obj.sar_path + obj.sar_name[1] + '.tif').astype('float32')
             sar = np.concatenate((np.expand_dims(sar_vv, 2), np.expand_dims(sar_vh, 2)), axis=2)
             del sar_vh, sar_vv
         else:
             sar = load_tiff_image(obj.sar_path + obj.sar_name[0] + '.tif').astype('float32')    
-            sar = np.transpose(sar, (1, 2, 0))   
+            sar = np.transpose(sar, (1, 2, 0))  
+        ''' 
         if cut:
             sar = sar[obj.lims[0]:obj.lims[1], obj.lims[2]:obj.lims[3],:]
         sar[np.isnan(sar)] = np.nanmean(sar)

@@ -212,7 +212,10 @@ class cGAN(object):
             self.opt_cloudy_path = args.datasets_dir + args.dataset_name + '/S2_cloudy/'
             self.labels_path = args.datasets_dir + args.dataset_name
 
-            self.sar_name_t0 = ['2020/S1_NS_2020_08_08_08_13_VV_VH']
+            # self.sar_name_t0 = ['2020/S1_NS_2020_08_08_08_13_VV_VH']
+            self.sar_name_t0 = ['2020/S1_NS_2020_08_08_08_13_VV',
+                                '2020/S1_NS_2020_08_08_08_13_VH']
+
             self.opt_name_t0 = ['2020/S2_R5_ST_2020_08_09_B1_B7',
                                 '2020/S2_R5_ST_2020_08_09_B8_B12']
             self.opt_cloudy_name_t0 = ['2020/S2_CL_R5_ST_2020_08_24_B1_B7',
@@ -220,7 +223,9 @@ class cGAN(object):
             self.opt_cloudmask_name_t0 = '2020/cloudmask_t0'
             self.opt_cloudy_cloudmask_name_t0 = '2020/cloudmask_cloudy_t0'
 
-            self.sar_name_t1 = ['2021/S1_NS_2021_07_22_07_27_VV_VH']
+            # self.sar_name_t1 = ['2021/S1_NS_2021_07_22_07_27_VV_VH']
+            self.sar_name_t1 = ['2021/S1_NS_2021_07_22_07_27_VV',
+                                '2021/S1_NS_2021_07_22_07_27_VH']
             self.opt_name_t1 = ['2021/S2_R5_ST_2021_07_25_B1_B7',
                                 '2021/S2_R5_ST_2021_07_25_B8_B12']
             self.opt_cloudy_name_t1 = ['2021/S2_CL_R5_ST_2021_07_30_B1_B7',
@@ -603,9 +608,17 @@ class cGAN(object):
         _, _, _, self.data_dic, _, _, = create_dataset_coordinates(self, prefix = prefix, padding=False,
                                                                    flag_image = [1, 0, 1], cut=False)        
         sar = self.sar_norm.Normalize(self.data_dic["sar_" + date])
-        ic(np.min(self.data_dic["opt_cloudy_" + date]), np.max(self.data_dic["opt_cloudy_" + date]))
+
+
+        save_cloudy_normalized = True
+        if save_cloudy_normalized == False:
+            print("Saving opt_cloudy image")
+            GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix] + '.tif', 
+                                                self.data_dic["opt_cloudy_" + date].transpose(2, 0, 1),
+                                                output_path + '/S2_cloudy_' + date + '_10bands.tif')
+            print("Finished saving opt_cloudy image")
+
         opt_cloudy = self.opt_norm.Normalize(self.data_dic["opt_cloudy_" + date])
-        ic(np.min(opt_cloudy), np.max(opt_cloudy))
         del self.data_dic
 
         start_time = time.time()
@@ -613,7 +626,7 @@ class cGAN(object):
         # opt_fake = self.sess.run(self.fake_opt_t0_sample,
         #                         feed_dict={self.SAR: sar[np.newaxis, ...],
         #                                 self.OPT_cloudy: opt_cloudy[np.newaxis, ...]})
-        fake_get = False
+        fake_get = True
         if fake_get == True:
             opt_fake = Image_reconstruction([self.SAR, self.OPT_cloudy], self.fake_opt_t0_sample, 
                                             self.output_c_dim, patch_size=3840, 
@@ -621,15 +634,14 @@ class cGAN(object):
         print("Inference complete --> {} segs".format(time.time()-start_time))
         del sar
         # 4096, 3840
-        ic(np.min(opt_cloudy), np.max(opt_cloudy))
         opt_cloudy = self.opt_norm.Denormalize(opt_cloudy)
-        ic(np.min(opt_cloudy), np.max(opt_cloudy))
 
-        print("Saving opt_cloudy image")
-        GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix] + '.tif', 
-                                             opt_cloudy.transpose(2, 0, 1),
-                                             output_path + '/S2_cloudy_' + date + '_10bands.tif')
-        print("Finished saving opt_cloudy image")
+        if save_cloudy_normalized == True:
+            print("Saving opt_cloudy image")
+            GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix] + '.tif', 
+                                                opt_cloudy.transpose(2, 0, 1),
+                                                output_path + '/S2_cloudy_' + date + '_10bands.tif')
+            print("Finished saving opt_cloudy image")
         del opt_cloudy
         if fake_get == True:
             opt_fake = self.opt_norm.Denormalize(opt_fake)
@@ -638,7 +650,7 @@ class cGAN(object):
                                                 opt_fake.transpose(2, 0, 1),
                                                 output_path + '/S2_' + date + '_10bands' + '_Fake_.tif')
             np.save(output_path + '/S2_' + date + '_10bands' + '_Fake_', opt_fake)
-
+            pdb.set_trace()
 
             # Loading Free-cloud image
             _, _, _, self.data_dic, _, _, = create_dataset_coordinates(self, prefix = prefix, padding=False,
