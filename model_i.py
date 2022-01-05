@@ -610,13 +610,16 @@ class cGAN(object):
         sar = self.sar_norm.Normalize(self.data_dic["sar_" + date])
 
 
-        save_cloudy_normalized = True
+        save_cloudy_normalized = False
+        fake_get = False
+
         if save_cloudy_normalized == False:
             print("Saving opt_cloudy image")
             GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix] + '.tif', 
                                                 self.data_dic["opt_cloudy_" + date].transpose(2, 0, 1),
                                                 output_path + '/S2_cloudy_' + date + '_10bands.tif')
             print("Finished saving opt_cloudy image")
+            pdb.set_trace()
 
         opt_cloudy = self.opt_norm.Normalize(self.data_dic["opt_cloudy_" + date])
         del self.data_dic
@@ -626,7 +629,6 @@ class cGAN(object):
         # opt_fake = self.sess.run(self.fake_opt_t0_sample,
         #                         feed_dict={self.SAR: sar[np.newaxis, ...],
         #                                 self.OPT_cloudy: opt_cloudy[np.newaxis, ...]})
-        fake_get = True
         if fake_get == True:
             opt_fake = Image_reconstruction([self.SAR, self.OPT_cloudy], self.fake_opt_t0_sample, 
                                             self.output_c_dim, patch_size=3840, 
