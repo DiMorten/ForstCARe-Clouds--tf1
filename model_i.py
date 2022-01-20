@@ -280,6 +280,70 @@ class cGAN(object):
                                        '2020/S2_CL_R5_NS5_2021_06_10_B8_B12']
             self.opt_name_t0 = ['../../Santarem/S2/2020/S2_R5_ST_2020_08_09_B1_B7',
                                 '../../Santarem/S2/2020/S2_R5_ST_2020_08_09_B8_B12']
+        elif args.dataset_name == 'NRW':
+            self.lims = np.array([0, 10980, 0, 10980])
+            self.sar_path = args.datasets_dir + args.dataset_name + '/S1/'
+            self.opt_path = args.datasets_dir + args.dataset_name + '/S2/'
+            self.opt_cloudy_path = args.datasets_dir + args.dataset_name + '/S2_cloudy/'
+            self.labels_path = args.datasets_dir + args.dataset_name
+
+            self.sar_name_t0 = ['S1_NRW_2020_06_01_06_04_VV',
+                                'S1_NRW_2020_06_01_06_04_VH']
+            self.opt_name_t0 = ['R10m/T32UMC_20200601T103629_B02_10m.jp2',
+                                'R10m/T32UMC_20200601T103629_B03_10m.jp2',
+                                'R10m/T32UMC_20200601T103629_B04_10m.jp2',
+                                'R20m/T32UMC_20200601T103629_B05_20m.jp2',
+                                'R20m/T32UMC_20200601T103629_B06_20m.jp2',
+                                'R20m/T32UMC_20200601T103629_B07_20m.jp2',
+                                'R10m/T32UMC_20200601T103629_B08_10m.jp2',
+                                'R20m/T32UMC_20200601T103629_B8A_20m.jp2',
+                                'R20m/T32UMC_20200601T103629_B11_20m.jp2',
+                                'R20m/T32UMC_20200601T103629_B12_20m.jp2']
+                                
+            self.opt_cloudy_name_t0 = ['R10m/T32UMC_20200606T104031_B02_10m.jp2',
+                                'R10m/T32UMC_20200606T104031_B03_10m.jp2',
+                                'R10m/T32UMC_20200606T104031_B04_10m.jp2',
+                                'R20m/T32UMC_20200606T104031_B05_20m.jp2',
+                                'R20m/T32UMC_20200606T104031_B06_20m.jp2',
+                                'R20m/T32UMC_20200606T104031_B07_20m.jp2',
+                                'R10m/T32UMC_20200606T104031_B08_10m.jp2',
+                                'R20m/T32UMC_20200606T104031_B8A_20m.jp2',
+                                'R20m/T32UMC_20200606T104031_B11_20m.jp2',
+                                'R20m/T32UMC_20200606T104031_B12_20m.jp2']
+                
+
+            self.opt_cloudmask_name_t0 = 'cloudmask_cloud_mask_nrw'
+            self.opt_cloudy_cloudmask_name_t0 = 'cloudmask_cloud_mask_nrw_cloudy'
+
+            self.sar_name_t1 = ['2020/S1_R1_MT_2020_08_03_2020_08_08_VV', 
+                                '2020/S1_R1_MT_2020_08_03_2020_08_08_VH']
+            self.opt_name_t1 = ['R10m/T32UMC_20200601T103629_B02_10m.jp2',
+                                'R10m/T32UMC_20200601T103629_B03_10m.jp2',
+                                'R10m/T32UMC_20200601T103629_B04_10m.jp2',
+                                'R20m/T32UMC_20200601T103629_B05_20m.jp2',
+                                'R20m/T32UMC_20200601T103629_B06_20m.jp2',
+                                'R20m/T32UMC_20200601T103629_B07_20m.jp2',
+                                'R10m/T32UMC_20200601T103629_B08_10m.jp2',
+                                'R20m/T32UMC_20200601T103629_B8A_20m.jp2',
+                                'R20m/T32UMC_20200601T103629_B11_20m.jp2',
+                                'R20m/T32UMC_20200601T103629_B12_20m.jp2']
+            self.opt_cloudy_name_t1 = ['R10m/T32UMC_20200606T104031_B02_10m.jp2',
+                                'R10m/T32UMC_20200606T104031_B03_10m.jp2',
+                                'R10m/T32UMC_20200606T104031_B04_10m.jp2',
+                                'R20m/T32UMC_20200606T104031_B05_20m.jp2',
+                                'R20m/T32UMC_20200606T104031_B06_20m.jp2',
+                                'R20m/T32UMC_20200606T104031_B07_20m.jp2',
+                                'R10m/T32UMC_20200606T104031_B08_10m.jp2',
+                                'R20m/T32UMC_20200606T104031_B8A_20m.jp2',
+                                'R20m/T32UMC_20200606T104031_B11_20m.jp2',
+                                'R20m/T32UMC_20200606T104031_B12_20m.jp2']
+            self.opt_cloudmask_name_t1 = 'cloudmask_cloud_mask_nrw'
+            self.opt_cloudy_cloudmask_name_t1 = 'cloudmask_cloud_mask_nrw_cloudy'
+
+            self.labels_name = '/cloudmask_cloud_mask_nrw'
+
+            self.mask_tr_vl_ts_name = '/mask_training_test_2'
+
     def build_model(self):
 
         # Picking up the generator and discriminator
