@@ -36,7 +36,7 @@ import rasterio
 from icecream import ic
 import pdb
 pp = pprint.PrettyPrinter()
-
+import cv2
 get_stddev = lambda x, k_h, k_w: 1/math.sqrt(k_w*k_h*x.get_shape()[-1])
 
 
@@ -280,6 +280,8 @@ def Split_in_Patches(rows, cols, patch_size, mask,
     Everything  in this function is made operating with
     the upper left corner of the patch
     """
+    # nan_mask
+    nan_mask = np.load('D:/Jorge/dataset/NRW/nan_mask.npy')
 
     # Percent of overlap between consecutive patches.
     overlap = round(patch_size * percent)
@@ -314,6 +316,8 @@ def Split_in_Patches(rows, cols, patch_size, mask,
                 if cloud_mask[i*stride:i*stride + patch_size, j*stride:j*stride + patch_size].any():
                     cloudy_patches += 1
                     continue
+                if nan_mask[i*stride:i*stride + patch_size, j*stride:j*stride + patch_size].any():
+                    continue 
                 for k in augmentation_list:
                     train_patches.append((prefix, i*stride, j*stride, k))
 #                if not lbl[i*stride:i*stride + patch_size, j*stride:j*stride + patch_size].any():
@@ -411,8 +415,20 @@ def create_dataset_coordinates(obj, prefix = 0, padding=True,
 
     # Sentinel 2
     if flag_image[1]:
-        for i in range(len(obj.opt_name)):        
-            img = load_tiff_image(obj.opt_path + obj.opt_name[i] + '.tif').astype('float32')
+        for i in range(len(obj.opt_name)): 
+            ic(obj.opt_path + obj.opt_name[i] + '.tif')       
+            isNrwDataset = True
+            if isNrwDataset == True:
+                img = load_tiff_image(obj.opt_path + obj.opt_name[i]).astype('float32')
+                bands_res = ['60m', '10m', '10m', '10m', '20m', '20m', '20m', '10m', 
+                    '20m', '60m', '10m', '20m', '20m']
+                dim = (10980, 10980)
+                # ic(bands_res[i])
+                if bands_res[i] == '20m' or bands_res[i] == '60m':
+                    img = cv2.resize(img, dim, interpolation = cv2.INTER_NEAREST)
+            else:
+                img = load_tiff_image(obj.opt_path + obj.opt_name[i] + '.tif').astype('float32')
+
             if len(img.shape) == 2: img = img[np.newaxis, ...]
             if i:
                 opt = np.concatenate((opt, img), axis=0)
@@ -440,7 +456,18 @@ def create_dataset_coordinates(obj, prefix = 0, padding=True,
     # Sentinel 2 cloudy
     if flag_image[2]:
         for i in range(len(obj.opt_cloudy_name)):
-            img = load_tiff_image(obj.opt_cloudy_path + obj.opt_cloudy_name[i] + '.tif').astype('float32')
+            isNrwDataset = True
+            if isNrwDataset == True:
+                img = load_tiff_image(obj.opt_cloudy_path + obj.opt_cloudy_name[i]).astype('float32')
+                bands_res = ['60m', '10m', '10m', '10m', '20m', '20m', '20m', '10m', 
+                    '20m', '60m', '10m', '20m', '20m']
+                dim = (10980, 10980)
+                # ic(bands_res[i])
+                if bands_res[i] == '20m' or bands_res[i] == '60m':
+                    img = cv2.resize(img, dim, interpolation = cv2.INTER_NEAREST)
+            else:
+                img = load_tiff_image(obj.opt_cloudy_path + obj.opt_cloudy_name[i] + '.tif').astype('float32')
+
             if len(img.shape) == 2: img = img[np.newaxis, ...]
             if i:
                 opt_cloudy = np.concatenate((opt_cloudy, img), axis=0)

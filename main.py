@@ -52,7 +52,7 @@ parser.add_argument("--spectral_norm", type=bool, default=True, choices=[True, F
 parser.add_argument("--data_augmentation", type=bool, default=True, choices=[True, False], help="Data Augmentation Flag")
 
 parser.add_argument('--dataset_name', dest='dataset_name', default='SEN2MS-CR', choices=["SEN2MS-CR", "Para_10m", "MG_10m", 
-    "Santarem", "Santarem_I1", "Santarem_I2", "Santarem_I3", "Santarem_I4", "Santarem_I5"], help='name of the dataset')
+    "Santarem", "Santarem_I1", "Santarem_I2", "Santarem_I3", "Santarem_I4", "Santarem_I5", "NRW"], help='name of the dataset')
 parser.add_argument('--datasets_dir', dest='datasets_dir', default='../../Datasets/', help='root dir')
 
 parser.add_argument("--norm_type", default="min_max", choices=["min_max", "std", "wise_frame_mean"], help="Type of normalization ")
