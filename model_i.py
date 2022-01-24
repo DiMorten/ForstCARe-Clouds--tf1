@@ -321,8 +321,8 @@ class cGAN(object):
             self.opt_cloudmask_name_t0 = 'cloudmask_cloud_mask_nrw'
             self.opt_cloudy_cloudmask_name_t0 = 'cloudmask_cloud_mask_nrw_cloudy'
 
-            self.sar_name_t1 = ['2020/S1_R1_MT_2020_08_03_2020_08_08_VV', 
-                                '2020/S1_R1_MT_2020_08_03_2020_08_08_VH']
+            self.sar_name_t1 = ['S1_NRW_2020_06_01_06_04_VV',
+                                'S1_NRW_2020_06_01_06_04_VH']
             self.opt_name_t1 = ['R60m/T32UMC_20200601T103629_B01_60m.jp2',
                             'R10m/T32UMC_20200601T103629_B02_10m.jp2',
                             'R10m/T32UMC_20200601T103629_B03_10m.jp2',
@@ -688,15 +688,23 @@ class cGAN(object):
 
 
         save_cloudy_normalized = False
-        fake_get = False
-
+        fake_get = True
+        isNrwDataset = True
+        if isNrwDataset == True:
+            tifStr = ''
+            dtype = np.uint16
+        else:
+            tifStr = '.tif'
+            dtype = np.float32                        
         if save_cloudy_normalized == False:
             print("Saving opt_cloudy image")
-            GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix] + '.tif', 
-                                                self.data_dic["opt_cloudy_" + date].transpose(2, 0, 1),
+            ic(self.opt_path + self.opt_name[prefix] + '.tif')
+#            GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix] + '.tif', 
+            GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix], 
+                                                self.data_dic["opt_cloudy_" + date].transpose(2, 0, 1).astype(np.uint16),
                                                 output_path + '/S2_cloudy_' + date + '_10bands.tif')
             print("Finished saving opt_cloudy image")
-            pdb.set_trace()
+            # pdb.set_trace()
 
         opt_cloudy = self.opt_norm.Normalize(self.data_dic["opt_cloudy_" + date])
         del self.data_dic
@@ -717,16 +725,18 @@ class cGAN(object):
 
         if save_cloudy_normalized == True:
             print("Saving opt_cloudy image")
-            GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix] + '.tif', 
-                                                opt_cloudy.transpose(2, 0, 1),
+#             GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix] + '.tif', 
+            GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix], 
+                                                opt_cloudy.transpose(2, 0, 1).astype(np.uint16),
                                                 output_path + '/S2_cloudy_' + date + '_10bands.tif')
             print("Finished saving opt_cloudy image")
         del opt_cloudy
         if fake_get == True:
             opt_fake = self.opt_norm.Denormalize(opt_fake)
             print("Saving opt_fake image")
-            GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix] + '.tif', 
-                                                opt_fake.transpose(2, 0, 1),
+#             GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix] + '.tif', 
+            GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix], 
+                                                opt_fake.transpose(2, 0, 1).astype(np.uint16),
                                                 output_path + '/S2_' + date + '_10bands' + '_Fake_.tif')
             np.save(output_path + '/S2_' + date + '_10bands' + '_Fake_', opt_fake)
             pdb.set_trace()
@@ -737,8 +747,9 @@ class cGAN(object):
             opt = self.opt_norm.clip_image(self.data_dic["opt_" + date])
             del self.data_dic
             print("Saving opt_cloudy image")
-            GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix] + '.tif', 
-                                                opt.transpose(2, 0, 1),
+#             GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix] + '.tif', 
+            GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix], 
+                                                opt.transpose(2, 0, 1).astype(np.uint16),
                                                 output_path + '/S2_' + date + '_10bands.tif')
 
             ########### METRICS ##################

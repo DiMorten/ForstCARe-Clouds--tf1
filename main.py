@@ -103,7 +103,10 @@ def actions():
         #     model.Translate_samples(args)
         elif args.phase == 'generate_complete_image':
             model.Translate_complete_image(args, date = "t0")
-            model.Translate_complete_image(args, date = "t1")
+            # model.Translate_complete_image(args, date = "t1")
+        elif args.phase == 'generate_complete_image_t0':
+            model.Translate_complete_image(args, date = "t0")
+
         elif args.phase == 'GEE_metrics':
             # model.GEE_metrics(args, date = "t0")
             model.GEE_metrics(args, date = "t1")

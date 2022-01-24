@@ -281,7 +281,7 @@ def Split_in_Patches(rows, cols, patch_size, mask,
     the upper left corner of the patch
     """
     # nan_mask
-    nan_mask = np.load('D:/Jorge/dataset/NRW/nan_mask.npy')
+    nan_mask = np.load('D:/Javier/Repo_Noa/SAR2Optical_Project/Datasets/NRW/nan_mask.npy')
 
     # Percent of overlap between consecutive patches.
     overlap = round(patch_size * percent)
@@ -340,6 +340,7 @@ def create_dataset_coordinates(obj, prefix = 0, padding=True,
     '''
         Generate patches for trn, val and tst
     '''
+    nan_mask = np.load('D:/Javier/Repo_Noa/SAR2Optical_Project/Datasets/NRW/nan_mask.npy')
 
     patch_size = obj.image_size_tr
 
@@ -349,6 +350,8 @@ def create_dataset_coordinates(obj, prefix = 0, padding=True,
     mask_tr_vl_ts = Split_Image(obj, rows, cols, no_tiles_h, 
                            no_tiles_w, random_tiles=obj.args.mask)
 
+    normalization_mask = mask_tr_vl_ts.copy()
+    normalization_mask[nan_mask == 1] = 2
     # Loading Labels
     # lbl = np.load(obj.labels_path + obj.labels_name + '.npy')
     # lbl = lbl[obj.lims[0]: obj.lims[1], obj.lims[2]: obj.lims[3]]
@@ -402,7 +405,7 @@ def create_dataset_coordinates(obj, prefix = 0, padding=True,
             sar = sar[obj.lims[0]:obj.lims[1], obj.lims[2]:obj.lims[3],:]
         sar[np.isnan(sar)] = np.nanmean(sar)
         sar = db2linear(sar)
-        sar_norm = Min_Max_Norm_Denorm(sar, mask_tr_vl_ts)
+        sar_norm = Min_Max_Norm_Denorm(sar, normalization_mask)
     else:
         sar, sar_norm = [], []
     
@@ -442,7 +445,7 @@ def create_dataset_coordinates(obj, prefix = 0, padding=True,
         if cut:
             opt = opt[obj.lims[0]:obj.lims[1], obj.lims[2]:obj.lims[3],:]
         opt[np.isnan(opt)] = np.nanmean(opt)
-        opt_norm = Min_Max_Norm_Denorm(opt, mask_tr_vl_ts)
+        opt_norm = Min_Max_Norm_Denorm(opt, normalization_mask)
     else:
         opt, opt_norm = [], []
 
