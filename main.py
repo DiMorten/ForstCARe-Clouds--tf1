@@ -108,8 +108,8 @@ def actions():
             model.Translate_complete_image(args, date = "t0")
 
         elif args.phase == 'GEE_metrics':
-            # model.GEE_metrics(args, date = "t0")
-            model.GEE_metrics(args, date = "t1")
+            model.GEE_metrics(args, date = "t0")
+            # model.GEE_metrics(args, date = "t1")
         elif args.phase == 'Meraner_metrics':
             model.Meraner_metrics(args, date = "t0")
             model.Meraner_metrics(args, date = "t1")

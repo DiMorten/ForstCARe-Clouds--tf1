@@ -1083,7 +1083,6 @@ def SSIM(y_true, y_pred):
     return ssim
 
 def METRICS(y_true, y_pred, mask=None, ssim_flag=False, dataset="Para_10m"):
-
     if ssim_flag:
         if dataset == 'Santarem' or dataset == 'Santarem_I1' or dataset == 'Santarem_I2' or dataset == 'Santarem_I3' or dataset == 'Santarem_I4' or dataset == 'Santarem_I5':            
             no_tiles_h = 5
@@ -1102,7 +1101,7 @@ def METRICS(y_true, y_pred, mask=None, ssim_flag=False, dataset="Para_10m"):
         if (rows % no_tiles_h): h = h[:-1]
         if (cols % no_tiles_w): w = w[:-1]
         tiles = list(itertools.product(h, w))
-        
+
         if mask is not None:
 
             if dataset == "Para_10m":
@@ -1115,7 +1114,7 @@ def METRICS(y_true, y_pred, mask=None, ssim_flag=False, dataset="Para_10m"):
             ssim = []
             if dataset != "NRW":
                 for i in test_tiles:
-                    print(i)
+                    ic(i)
                     img1 = y_true[tiles[i][0]:tiles[i][0]+xsz, tiles[i][1]:tiles[i][1]+ysz, :]
                     img2 = y_pred[tiles[i][0]:tiles[i][0]+xsz, tiles[i][1]:tiles[i][1]+ysz, :]
                     ssim.append(SSIM(img1, img2))
@@ -1123,7 +1122,7 @@ def METRICS(y_true, y_pred, mask=None, ssim_flag=False, dataset="Para_10m"):
                 test_regions = [[9472,10751,4352,5631],
                     [4608,5630,8450,8959]]
                 for test_region in test_regions:
-                    print(test_region)
+                    ic(test_region)
                     img1 = y_true[test_region[0]:test_region[1], test_region[2]:test_region[3]]
                     img2 = y_pred[test_region[0]:test_region[1], test_region[2]:test_region[3]]
                     print(img1.shape, img2.shape)

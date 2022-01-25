@@ -904,7 +904,9 @@ class cGAN(object):
             # Mato Grosso OK
             # path = args.test_dir + '/GEE/' + args.dataset_name
             # file_ = '/2019_09_15_2019_09_30.tif'
-
+            path = args.test_dir + '/' + args.dataset_name
+            file_ = '/GEE_Mosaic.tif'
+            output_file = '/three months.txt'
         elif date is "t1":
             self.sar_name = self.sar_name_t1
             self.opt_name = self.opt_name_t1
@@ -955,10 +957,11 @@ class cGAN(object):
         ########### METRICS ##################
         opt =           opt[self.lims[0]:self.lims[1], self.lims[2]:self.lims[3],:]
         opt_fake = opt_fake[self.lims[0]:self.lims[1], self.lims[2]:self.lims[3],:]
-
+        ic(opt.shape, opt_fake.shape)
         with open(path + output_file, 'a') as f:
             # Complete image
             mae, mse, rmse, psnr, sam, ssim = METRICS(opt, opt_fake, ssim_flag=True)
+
             Write_metrics_on_file(f, "Metrics " + date + "-- Complete Image", mae, mse, rmse, psnr, sam, ssim)
 
             # test area
