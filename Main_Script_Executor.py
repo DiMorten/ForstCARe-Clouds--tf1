@@ -63,7 +63,7 @@ Schedule.append("python main.py --generator deeplab --discriminator atrous --pha
                                 --checkpoint_dir ./checkpoint --sample_dir ./sample --test_dir ./test")
 '''
 
-Schedule.append("python main.py --generator deeplab --discriminator pix2pix --phase train \
+Schedule.append("python main.py --generator deeplab --discriminator pix2pix --phase generate_complete_image \
                                 --batch_size 2 --epoch 60 --dataset_name NRW \
                                 --datasets_dir D:/Javier/Repo_Noa/SAR2Optical_Project/Datasets/ --image_size_tr 256 --output_stride 16 \
                                 --patch_overlap 0.4 --date d0\

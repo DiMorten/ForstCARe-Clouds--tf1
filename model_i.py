@@ -690,72 +690,81 @@ class cGAN(object):
         save_cloudy_normalized = False
         fake_get = True
         isNrwDataset = True
+        isMetricsGet = True
+        isLoadImages = False
         if isNrwDataset == True:
             tifStr = ''
             dtype = np.uint16
         else:
             tifStr = '.tif'
-            dtype = np.float32                        
-        if save_cloudy_normalized == False:
-            print("Saving opt_cloudy image")
-            ic(self.opt_path + self.opt_name[prefix] + '.tif')
-#            GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix] + '.tif', 
-            GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix], 
-                                                self.data_dic["opt_cloudy_" + date].transpose(2, 0, 1).astype(np.uint16),
-                                                output_path + '/S2_cloudy_' + date + '_10bands.tif')
-            print("Finished saving opt_cloudy image")
-            # pdb.set_trace()
+            dtype = np.float32 
 
-        opt_cloudy = self.opt_norm.Normalize(self.data_dic["opt_cloudy_" + date])
-        del self.data_dic
+        if isLoadImages == False:
+            if save_cloudy_normalized == False:
+                print("Saving opt_cloudy image")
+                ic(self.opt_path + self.opt_name[1] + '.tif')
+    #            GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix] + '.tif', 
+                ic(self.data_dic["opt_cloudy_" + date].transpose(2, 0, 1).astype(np.uint16).shape)
+                GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[1], 
+                                                    self.data_dic["opt_cloudy_" + date].transpose(2, 0, 1).astype(np.uint16),
+                                                    output_path + '/S2_cloudy_' + date + '_10bands.tif')
+                print("Finished saving opt_cloudy image")
+                # pdb.set_trace()
 
-        start_time = time.time()
-        print("Start Inference {}".format(date))
-        # opt_fake = self.sess.run(self.fake_opt_t0_sample,
-        #                         feed_dict={self.SAR: sar[np.newaxis, ...],
-        #                                 self.OPT_cloudy: opt_cloudy[np.newaxis, ...]})
-        if fake_get == True:
-            opt_fake = Image_reconstruction([self.SAR, self.OPT_cloudy], self.fake_opt_t0_sample, 
-                                            self.output_c_dim, patch_size=3840, 
-                                            overlap_percent=0.02).Inference(np.concatenate((sar, opt_cloudy), axis=2))
-        print("Inference complete --> {} segs".format(time.time()-start_time))
-        del sar
-        # 4096, 3840
-        opt_cloudy = self.opt_norm.Denormalize(opt_cloudy)
-
-        if save_cloudy_normalized == True:
-            print("Saving opt_cloudy image")
-#             GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix] + '.tif', 
-            GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix], 
-                                                opt_cloudy.transpose(2, 0, 1).astype(np.uint16),
-                                                output_path + '/S2_cloudy_' + date + '_10bands.tif')
-            print("Finished saving opt_cloudy image")
-        del opt_cloudy
-        if fake_get == True:
-            opt_fake = self.opt_norm.Denormalize(opt_fake)
-            print("Saving opt_fake image")
-#             GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix] + '.tif', 
-            GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix], 
-                                                opt_fake.transpose(2, 0, 1).astype(np.uint16),
-                                                output_path + '/S2_' + date + '_10bands' + '_Fake_.tif')
-            np.save(output_path + '/S2_' + date + '_10bands' + '_Fake_', opt_fake)
-            pdb.set_trace()
-
-            # Loading Free-cloud image
-            _, _, _, self.data_dic, _, _, = create_dataset_coordinates(self, prefix = prefix, padding=False,
-                                                                    flag_image = [0, 1, 0], cut=False)
-            opt = self.opt_norm.clip_image(self.data_dic["opt_" + date])
+            opt_cloudy = self.opt_norm.Normalize(self.data_dic["opt_cloudy_" + date])
             del self.data_dic
-            print("Saving opt_cloudy image")
-#             GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix] + '.tif', 
-            GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix], 
-                                                opt.transpose(2, 0, 1).astype(np.uint16),
-                                                output_path + '/S2_' + date + '_10bands.tif')
 
+            start_time = time.time()
+            print("Start Inference {}".format(date))
+            # opt_fake = self.sess.run(self.fake_opt_t0_sample,
+            #                         feed_dict={self.SAR: sar[np.newaxis, ...],
+            #                                 self.OPT_cloudy: opt_cloudy[np.newaxis, ...]})
+            if fake_get == True:
+                opt_fake = Image_reconstruction([self.SAR, self.OPT_cloudy], self.fake_opt_t0_sample, 
+                                                self.output_c_dim, patch_size=3840, 
+                                                overlap_percent=0.02).Inference(np.concatenate((sar, opt_cloudy), axis=2))
+            print("Inference complete --> {} segs".format(time.time()-start_time))
+            del sar
+            # 4096, 3840
+            opt_cloudy = self.opt_norm.Denormalize(opt_cloudy)
+
+            if save_cloudy_normalized == True:
+                print("Saving opt_cloudy image")
+    #             GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix] + '.tif', 
+                GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[1], 
+                                                    opt_cloudy.transpose(2, 0, 1).astype(np.uint16),
+                                                    output_path + '/S2_cloudy_' + date + '_10bands.tif')
+                print("Finished saving opt_cloudy image")
+            del opt_cloudy
+            if fake_get == True:
+                opt_fake = self.opt_norm.Denormalize(opt_fake)
+                print("Saving opt_fake image")
+    #             GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix] + '.tif', 
+                GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[1], 
+                                                    opt_fake.transpose(2, 0, 1).astype(np.uint16),
+                                                    output_path + '/S2_' + date + '_10bands' + '_Fake_.tif')
+                np.save(output_path + '/S2_' + date + '_10bands' + '_Fake_', opt_fake)
+                pdb.set_trace()
+
+                # Loading Free-cloud image
+                _, _, _, self.data_dic, _, _, = create_dataset_coordinates(self, prefix = prefix, padding=False,
+                                                                        flag_image = [0, 1, 0], cut=False)
+                opt = self.opt_norm.clip_image(self.data_dic["opt_" + date])
+                del self.data_dic
+                print("Saving opt_cloudy image")
+    #             GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix] + '.tif', 
+                GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[1], 
+                                                    opt.transpose(2, 0, 1).astype(np.uint16),
+                                                    output_path + '/S2_' + date + '_10bands.tif')
+        else:
+            opt = load_tiff_image(output_path + '/S2_' + date + '_10bands' + '_Fake_.tif').transpose(1, 2, 0).astype(np.float32)
+            opt_fake = load_tiff_image(output_path + '/S2_' + date + '_10bands.tif').transpose(1, 2, 0).astype(np.float32)
+            ic(opt.shape)
+        if fake_get == True:
             ########### METRICS ##################
             opt =           opt[self.lims[0]:self.lims[1], self.lims[2]:self.lims[3],:]
             opt_fake = opt_fake[self.lims[0]:self.lims[1], self.lims[2]:self.lims[3],:]
-
+        if isMetricsGet == True:
             with open(output_path + '/' + 'Similarity_Metrics.txt', 'a') as f:
                 # test area (cloudy)
                 mae, mse, rmse, psnr, sam, ssim = METRICS(opt, opt_fake, mask_cloud)

@@ -37,6 +37,7 @@ from icecream import ic
 import pdb
 pp = pprint.PrettyPrinter()
 import cv2
+from icecream import ic
 get_stddev = lambda x, k_h, k_w: 1/math.sqrt(k_w*k_h*x.get_shape()[-1])
 
 
@@ -437,9 +438,10 @@ def create_dataset_coordinates(obj, prefix = 0, padding=True,
                 opt = np.concatenate((opt, img), axis=0)
             else:
                 opt = img
+            ic(img.shape)
         del img
         # np.save('s2' + '.npy', opt)
-
+        ic(opt.shape)
         opt = opt[[1, 2, 3, 4, 5, 6, 7, 8, 11, 12], :, :]
         opt = opt.transpose([1, 2, 0])
         if cut:
@@ -1111,11 +1113,22 @@ def METRICS(y_true, y_pred, mask=None, ssim_flag=False, dataset="Para_10m"):
                 test_tiles = [0,2,6,8,12,13,15,16,19,21,22,23]
 
             ssim = []
-            for i in test_tiles:
-                print(i)
-                img1 = y_true[tiles[i][0]:tiles[i][0]+xsz, tiles[i][1]:tiles[i][1]+ysz, :]
-                img2 = y_pred[tiles[i][0]:tiles[i][0]+xsz, tiles[i][1]:tiles[i][1]+ysz, :]
-                ssim.append(SSIM(img1, img2))
+            if dataset != "NRW":
+                for i in test_tiles:
+                    print(i)
+                    img1 = y_true[tiles[i][0]:tiles[i][0]+xsz, tiles[i][1]:tiles[i][1]+ysz, :]
+                    img2 = y_pred[tiles[i][0]:tiles[i][0]+xsz, tiles[i][1]:tiles[i][1]+ysz, :]
+                    ssim.append(SSIM(img1, img2))
+            else:
+                test_regions = [[9472,10751,4352,5631],
+                    [4608,5630,8450,8959]]
+                for test_region in test_regions:
+                    print(test_region)
+                    img1 = y_true[test_region[0]:test_region[1], test_region[2]:test_region[3]]
+                    img2 = y_pred[test_region[0]:test_region[1], test_region[2]:test_region[3]]
+                    print(img1.shape, img2.shape)
+                    # pdb.set_trace()
+                    ssim.append(SSIM(img1, img2))
 
         else:
             # Calculate ssim for the whole image
