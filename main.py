@@ -109,10 +109,12 @@ def actions():
 
         elif args.phase == 'GEE_metrics':
             model.GEE_metrics(args, date = "t0")
-            # model.GEE_metrics(args, date = "t1")
+            if args.dataset_name != 'NRW':
+                model.GEE_metrics(args, date = "t1")
         elif args.phase == 'Meraner_metrics':
             model.Meraner_metrics(args, date = "t0")
-            model.Meraner_metrics(args, date = "t1")
+            if args.dataset_name != 'NRW':
+                model.Meraner_metrics(args, date = "t1")
         else:
             print ('...')
 

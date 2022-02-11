@@ -744,7 +744,7 @@ class cGAN(object):
                                                     opt_fake.transpose(2, 0, 1).astype(np.uint16),
                                                     output_path + '/S2_' + date + '_10bands' + '_Fake_.tif')
                 np.save(output_path + '/S2_' + date + '_10bands' + '_Fake_', opt_fake)
-                pdb.set_trace()
+                # pdb.set_trace()
 
                 # Loading Free-cloud image
                 _, _, _, self.data_dic, _, _, = create_dataset_coordinates(self, prefix = prefix, padding=False,
@@ -806,9 +806,12 @@ class cGAN(object):
             # output_file = 'predictions_scratch_60epoch.txt'
 
             # Mato Grosso
-            file_ = 'predictions_scratch_MG_2019.tif'
-            output_file = 'predictions_scratch_MG.txt'
+            # file_ = 'predictions_scratch_MG_2019.tif'
+            # output_file = 'predictions_scratch_MG.txt'
 
+            # NRW
+            file_ = 'predictions_scratch_NRW_2019.tif'
+            output_file = 'predictions_scratch_NRW.txt'
         elif date is "t1":
             opt_cloudy_cloudmask_name = self.opt_cloudy_cloudmask_name_t1
             self.sar_name = self.sar_name_t1
@@ -904,8 +907,14 @@ class cGAN(object):
             # Mato Grosso OK
             # path = args.test_dir + '/GEE/' + args.dataset_name
             # file_ = '/2019_09_15_2019_09_30.tif'
+
+            # NRW
             path = args.test_dir + '/' + args.dataset_name
-            file_ = '/GEE_Mosaic.tif'
+            # file_ = '/GEE_Mosaic.tif'
+            # file_ = '/02_06_16_06_2020.tif'
+            # file_ = '/02_06_23_06_2020.tif'
+            file_ = '/02_06_09_06_2020.tif'
+            
             output_file = '/three months.txt'
         elif date is "t1":
             self.sar_name = self.sar_name_t1

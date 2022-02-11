@@ -61,25 +61,33 @@ Schedule.append("python main.py --generator deeplab --discriminator atrous --pha
                                 --datasets_dir E:/Jorge/dataset/ --image_size_tr 256 --output_stride 16 \
                                 --patch_overlap 0.4 --date both\
                                 --checkpoint_dir ./checkpoint --sample_dir ./sample --test_dir ./test")
+    Schedule.append("python main.py --generator deeplab --discriminator atrous --phase generate_complete_image \
+                                    --batch_size 2 --epoch 60 --dataset_name Santarem \
+                                    --datasets_dir E:/Jorge/dataset/ --image_size_tr 256 --output_stride 16 \
+                                    --patch_overlap 0.4 --date both\
+                                    --checkpoint_dir ./checkpoint --sample_dir ./sample --test_dir ./test")
 '''
-'''
-Schedule.append("python main.py --generator deeplab --discriminator atrous --phase generate_complete_image \
-                                --batch_size 2 --epoch 60 --dataset_name NRW \
-                                --datasets_dir D:/Javier/Repo_Noa/SAR2Optical_Project/Datasets/ --image_size_tr 256 --output_stride 16 \
-                                --patch_overlap 0.4 --date d0\
-                                --checkpoint_dir ./checkpoint --sample_dir ./sample --test_dir ./test")
-'''
-# Schedule.append("python main.py --generator deeplab --discriminator atrous --phase generate_complete_image \
-#                                 --batch_size 2 --epoch 60 --dataset_name Santarem \
-#                                 --datasets_dir E:/Jorge/dataset/ --image_size_tr 256 --output_stride 16 \
-#                                 --patch_overlap 0.4 --date both\
-#                                 --checkpoint_dir ./checkpoint --sample_dir ./sample --test_dir ./test")
+mode = 'GEE_metrics'
 
-# Schedule.append("python main.py --phase GEE_metrics --dataset_name NRW --test_dir ./test")
-Schedule.append("python main.py --phase GEE_metrics --dataset_name NRW --test_dir E:/Jorge/dataset/ --datasets_dir D:/Javier/Repo_Noa/SAR2Optical_Project/Datasets/")
+if mode == 'train':
+    pass
+elif mode == 'infer':
+
+    Schedule.append("python main.py --generator deeplab --discriminator pix2pix --phase generate_complete_image \
+                                    --batch_size 2 --epoch 60 --dataset_name NRW \
+                                    --datasets_dir D:/Javier/Repo_Noa/SAR2Optical_Project/Datasets/ --image_size_tr 256 --output_stride 16 \
+                                    --patch_overlap 0.4 --date d0\
+                                    --checkpoint_dir ./checkpoint --sample_dir ./sample --test_dir ./test")
 
 
-# Schedule.append("python main.py --phase Meraner_metrics --dataset_name Para_10m --test_dir ./test")
+elif mode == 'GEE_metrics':
+    # Schedule.append("python main.py --phase GEE_metrics --dataset_name NRW --test_dir ./test")
+    Schedule.append("python main.py --phase GEE_metrics --dataset_name NRW --test_dir E:/Jorge/dataset/ --datasets_dir D:/Javier/Repo_Noa/SAR2Optical_Project/Datasets/")
+
+elif mode == 'Meraner_metrics':
+    Schedule.append("python main.py --phase Meraner_metrics --dataset_name NRW \
+                                    --test_dir D:/Javier/Repo_Noa/SAR2Optical_Project/Datasets/NRW \
+                                    --datasets_dir D:/Javier/Repo_Noa/SAR2Optical_Project/Datasets/")
 
 
 # ========= EXPERIMENTS TRAINING WITH SEN2MS-CR SCENES ============
