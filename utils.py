@@ -162,6 +162,15 @@ class Min_Max_Norm_Denorm():
         img /= scale
         return img
 
+    def DenormalizeTf(self, img):
+        data_range = self.max_val - self.min_val
+        scale = (self.feature_range[1] - self.feature_range[0]) / _handle_zeros_in_scale(data_range)
+        min_ = self.feature_range[0] - self.min_val * scale
+
+        img = tf.identity(img) - min_
+        img /= scale
+        return img
+
 
 
 def Split_Tiles(tiles_list, xsz, ysz, stride=256, patch_size=256):
@@ -282,7 +291,7 @@ def Split_in_Patches(rows, cols, patch_size, mask,
     the upper left corner of the patch
     """
     # nan_mask
-    nan_mask = np.load('D:/Javier/Repo_Noa/SAR2Optical_Project/Datasets/NRW/nan_mask.npy')
+    ## nan_mask = np.load('D:/Javier/Repo_Noa/SAR2Optical_Project/Datasets/NRW/nan_mask.npy')
 
     # Percent of overlap between consecutive patches.
     overlap = round(patch_size * percent)
@@ -317,8 +326,8 @@ def Split_in_Patches(rows, cols, patch_size, mask,
                 if cloud_mask[i*stride:i*stride + patch_size, j*stride:j*stride + patch_size].any():
                     cloudy_patches += 1
                     continue
-                if nan_mask[i*stride:i*stride + patch_size, j*stride:j*stride + patch_size].any():
-                    continue 
+                ## if nan_mask[i*stride:i*stride + patch_size, j*stride:j*stride + patch_size].any():
+                ##    continue 
                 for k in augmentation_list:
                     train_patches.append((prefix, i*stride, j*stride, k))
 #                if not lbl[i*stride:i*stride + patch_size, j*stride:j*stride + patch_size].any():
@@ -341,7 +350,8 @@ def create_dataset_coordinates(obj, prefix = 0, padding=True,
     '''
         Generate patches for trn, val and tst
     '''
-    nan_mask = np.load('D:/Javier/Repo_Noa/SAR2Optical_Project/Datasets/NRW/nan_mask.npy')
+    # NRW dataset
+    ## nan_mask = np.load('D:/Javier/Repo_Noa/SAR2Optical_Project/Datasets/NRW/nan_mask.npy')
 
     patch_size = obj.image_size_tr
 
@@ -352,7 +362,8 @@ def create_dataset_coordinates(obj, prefix = 0, padding=True,
                            no_tiles_w, random_tiles=obj.args.mask)
 
     normalization_mask = mask_tr_vl_ts.copy()
-    normalization_mask[nan_mask == 1] = 2
+    # NRW dataset
+    ## normalization_mask[nan_mask == 1] = 2
     # Loading Labels
     # lbl = np.load(obj.labels_path + obj.labels_name + '.npy')
     # lbl = lbl[obj.lims[0]: obj.lims[1], obj.lims[2]: obj.lims[3]]
@@ -421,7 +432,7 @@ def create_dataset_coordinates(obj, prefix = 0, padding=True,
     if flag_image[1]:
         for i in range(len(obj.opt_name)): 
             ic(obj.opt_path + obj.opt_name[i] + '.tif')       
-            isNrwDataset = True
+            isNrwDataset = False
             if isNrwDataset == True:
                 img = load_tiff_image(obj.opt_path + obj.opt_name[i]).astype('float32')
                 bands_res = ['60m', '10m', '10m', '10m', '20m', '20m', '20m', '10m', 
@@ -461,7 +472,7 @@ def create_dataset_coordinates(obj, prefix = 0, padding=True,
     # Sentinel 2 cloudy
     if flag_image[2]:
         for i in range(len(obj.opt_cloudy_name)):
-            isNrwDataset = True
+            isNrwDataset = False
             if isNrwDataset == True:
                 img = load_tiff_image(obj.opt_cloudy_path + obj.opt_cloudy_name[i]).astype('float32')
                 bands_res = ['60m', '10m', '10m', '10m', '20m', '20m', '20m', '10m', 

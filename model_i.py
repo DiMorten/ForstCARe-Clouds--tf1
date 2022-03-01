@@ -36,7 +36,7 @@ class cGAN(object):
 
     def __init__(self, sess, args, image_size_tr=256, image_size = 256, load_size=286,
                  batch_size=1, sample_size=1, output_size=256,
-                 gf_dim=64, df_dim=64, L1_lambda=100,
+                 gf_dim=64, df_dim=64, L1_lambda=100, SSIM_lambda = 100,
                  input_c_dim=11, output_c_dim=7, dataset_name='facades',
                  checkpoint_dir=None, sample_dir=None):
 
@@ -69,6 +69,7 @@ class cGAN(object):
         self.output_c_dim = output_c_dim
 
         self.L1_lambda = L1_lambda
+        self.SSIM_lambda = 100
         
         self.args = args
         self.sampling_type = args.sampling_type
@@ -377,9 +378,13 @@ class cGAN(object):
 
 
         # =============== NETWORKS =================
-        self.fake_opt_t0 = generator(self, self.SAR, self.OPT_cloudy, reuse=False, is_train=True)
-        self.fake_opt_t0_sample = generator(self, self.SAR, self.OPT_cloudy, reuse=True, is_train=True)
+        self.args.dropout_train_mode = True
+        print(self.args.dropout_train_mode)
+        
 
+        pdb.set_trace()
+        self.fake_opt_t0 = generator(self, self.SAR, self.OPT_cloudy, reuse=False, is_train=self.args.dropout_train_mode)
+        self.fake_opt_t0_sample = generator(self, self.SAR, self.OPT_cloudy, reuse=True, is_train=self.args.dropout_train_mode)
         self.OPT_pair = tf.concat([self.OPT_cloudy, self.OPT], 3)
         self.OPT_pair_fake = tf.concat([self.OPT_cloudy, self.fake_opt_t0], 3)
 
@@ -389,10 +394,18 @@ class cGAN(object):
         self.d_sum = tf1.summary.histogram("d", self.D)
         self.d__sum = tf1.summary.histogram("d_", self.D_)
 
+        # print("K.int_shape(fake_opt_t0)", K.int_shape(fake_opt_t0))
+        # print("K.int_shape(fake_opt_t0)", K.int_shape(self.oPT))
+        self.opt_norm = joblib.load(self.args.datasets_dir + self.args.dataset_name  + '/' + 'opt_norm.pkl')
+        self.OPT_unnorm = self.opt_norm.DenormalizeTf(self.OPT)
+        self.fake_opt_t0_unnorm = self.opt_norm.DenormalizeTf(self.fake_opt_t0)
+
         self.d_loss_real = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=self.D_logits, labels=tf.ones_like(self.D)))
         self.d_loss_fake = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=self.D_logits_, labels=tf.zeros_like(self.D_)))
         self.g_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=self.D_logits_, labels=tf.ones_like(self.D_))) \
-                        + self.L1_lambda * tf.reduce_mean(tf.abs(self.OPT - self.fake_opt_t0))
+                        + self.L1_lambda * tf.reduce_mean(tf.abs(self.OPT - self.fake_opt_t0))#  \
+                        # + self.SSIM_lambda * tf.reduce_mean(1 - tf.image.ssim(self.OPT_unnorm, self.fake_opt_t0_unnorm, 10000.0))
+
 
         self.d_loss_real_sum = tf1.summary.scalar("d_loss_real", self.d_loss_real)
         self.d_loss_fake_sum = tf1.summary.scalar("d_loss_fake", self.d_loss_fake)
@@ -689,12 +702,13 @@ class cGAN(object):
 
         save_cloudy_normalized = False
         fake_get = True
-        isNrwDataset = True
+        isNrwDataset = False
         isMetricsGet = True
         isLoadImages = False
         if isNrwDataset == True:
             tifStr = ''
             dtype = np.uint16
+            prefix = 1
         else:
             tifStr = '.tif'
             dtype = np.float32 
@@ -702,11 +716,11 @@ class cGAN(object):
         if isLoadImages == False:
             if save_cloudy_normalized == False:
                 print("Saving opt_cloudy image")
-                ic(self.opt_path + self.opt_name[1] + '.tif')
-    #            GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix] + '.tif', 
-                ic(self.data_dic["opt_cloudy_" + date].transpose(2, 0, 1).astype(np.uint16).shape)
-                GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[1], 
-                                                    self.data_dic["opt_cloudy_" + date].transpose(2, 0, 1).astype(np.uint16),
+                ic(self.opt_path + self.opt_name[prefix] + tifStr)
+                ic(self.data_dic["opt_cloudy_" + date].transpose(2, 0, 1).astype(dtype).shape)
+                GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix] + tifStr, 
+    #            GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix], 
+                                                    self.data_dic["opt_cloudy_" + date].transpose(2, 0, 1).astype(dtype),
                                                     output_path + '/S2_cloudy_' + date + '_10bands.tif')
                 print("Finished saving opt_cloudy image")
                 # pdb.set_trace()
@@ -730,18 +744,18 @@ class cGAN(object):
 
             if save_cloudy_normalized == True:
                 print("Saving opt_cloudy image")
-    #             GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix] + '.tif', 
-                GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[1], 
-                                                    opt_cloudy.transpose(2, 0, 1).astype(np.uint16),
+                GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix] + tifStr, 
+    #            GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix], 
+                                                    opt_cloudy.transpose(2, 0, 1).astype(dtype),
                                                     output_path + '/S2_cloudy_' + date + '_10bands.tif')
                 print("Finished saving opt_cloudy image")
             del opt_cloudy
             if fake_get == True:
                 opt_fake = self.opt_norm.Denormalize(opt_fake)
                 print("Saving opt_fake image")
-    #             GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix] + '.tif', 
-                GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[1], 
-                                                    opt_fake.transpose(2, 0, 1).astype(np.uint16),
+                GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix] + tifStr, 
+    #            GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix], 
+                                                    opt_fake.transpose(2, 0, 1).astype(dtype),
                                                     output_path + '/S2_' + date + '_10bands' + '_Fake_.tif')
                 np.save(output_path + '/S2_' + date + '_10bands' + '_Fake_', opt_fake)
                 # pdb.set_trace()
@@ -752,9 +766,9 @@ class cGAN(object):
                 opt = self.opt_norm.clip_image(self.data_dic["opt_" + date])
                 del self.data_dic
                 print("Saving opt_cloudy image")
-    #             GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix] + '.tif', 
-                GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[1], 
-                                                    opt.transpose(2, 0, 1).astype(np.uint16),
+                GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix] + tifStr, 
+    #            GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix], 
+                                                    opt.transpose(2, 0, 1).astype(dtype),
                                                     output_path + '/S2_' + date + '_10bands.tif')
         else:
             opt = load_tiff_image(output_path + '/S2_' + date + '_10bands' + '_Fake_.tif').transpose(1, 2, 0).astype(np.float32)

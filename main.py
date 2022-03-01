@@ -64,10 +64,13 @@ parser.add_argument("--mask", default='fixed', choices=['fixed', 'random', 'k-fo
 parser.add_argument("--date", default="both", choices=["both", "d0", "d1"], help="Indicate which date generate ")
 parser.add_argument("--patch_overlap", type=float, default=0.50, help="Overlap percentage between patches")
 
+parser.add_argument("--SSIM_lambda", type=float, default=100.0, help="SSIM weight in loss function")
+parser.add_argument("--dropout_train_mode", type=bool, default=True, help="Set dropout to train mode at inference")
 
 #####_________#####
 
 args = parser.parse_args()
+from icecream import ic
 
 if args.phase == 'generate_complete_image':
     os.environ["CUDA_VISIBLE_DEVICES"]="-1" 
@@ -95,7 +98,8 @@ def actions():
         model = cGAN(sess, args, image_size_tr=args.image_size_tr, image_size=args.image_size, 
                         batch_size=args.batch_size, input_c_dim=args.input_nc,
                         output_c_dim=args.output_nc, dataset_name=args.dataset_name,
-                        checkpoint_dir=args.checkpoint_dir, sample_dir=args.sample_dir) #args added for using DeepLabv3
+                        checkpoint_dir=args.checkpoint_dir, sample_dir=args.sample_dir,
+                        SSIM_lambda = args.SSIM_lambda) #args added for using DeepLabv3
 
         if args.phase == 'train':
             model.train(args)
@@ -103,7 +107,7 @@ def actions():
         #     model.Translate_samples(args)
         elif args.phase == 'generate_complete_image':
             model.Translate_complete_image(args, date = "t0")
-            # model.Translate_complete_image(args, date = "t1")
+            model.Translate_complete_image(args, date = "t1")
         elif args.phase == 'generate_complete_image_t0':
             model.Translate_complete_image(args, date = "t0")
 
@@ -117,11 +121,11 @@ def actions():
                 model.Meraner_metrics(args, date = "t1")
         else:
             print ('...')
+    ic(args)
 
 def main(_):
 
     actions()
-
 
 if __name__ == '__main__':
     tf1.app.run()
