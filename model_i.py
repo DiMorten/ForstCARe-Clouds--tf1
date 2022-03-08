@@ -160,6 +160,16 @@ class cGAN(object):
 
         elif args.dataset_name == 'MG_10m':
             self.lims = np.array([0, 20795-4000, 0+3000, 13420])
+            
+            '''
+            row_low_lim = 0
+            row_high_lim = 20795-4000
+            col_low_lim = 0+3000
+            col_high_lim = 13420
+
+            self.lims = np.array([row_low_lim + 4000, row_low_lim + 11000, col_low_lim + 4000, col_low_lim + 11000])
+            ic(self.lims)
+            '''
             self.sar_path = args.datasets_dir + args.dataset_name + '/S1/'
             self.opt_path = args.datasets_dir + args.dataset_name + '/S2/'
             self.opt_cloudy_path = args.datasets_dir + args.dataset_name + '/S2_cloudy/'
@@ -378,13 +388,12 @@ class cGAN(object):
 
 
         # =============== NETWORKS =================
-        self.args.dropout_train_mode = True
-        print(self.args.dropout_train_mode)
+        #print(self.args.dropout_train_mode)
         
 
-        pdb.set_trace()
-        self.fake_opt_t0 = generator(self, self.SAR, self.OPT_cloudy, reuse=False, is_train=self.args.dropout_train_mode)
-        self.fake_opt_t0_sample = generator(self, self.SAR, self.OPT_cloudy, reuse=True, is_train=self.args.dropout_train_mode)
+        #pdb.set_trace()
+        self.fake_opt_t0 = generator(self, self.SAR, self.OPT_cloudy, reuse=False, is_train=True)
+        self.fake_opt_t0_sample = generator(self, self.SAR, self.OPT_cloudy, reuse=True, is_train=True)
         self.OPT_pair = tf.concat([self.OPT_cloudy, self.OPT], 3)
         self.OPT_pair_fake = tf.concat([self.OPT_cloudy, self.fake_opt_t0], 3)
 

@@ -65,7 +65,6 @@ parser.add_argument("--date", default="both", choices=["both", "d0", "d1"], help
 parser.add_argument("--patch_overlap", type=float, default=0.50, help="Overlap percentage between patches")
 
 parser.add_argument("--SSIM_lambda", type=float, default=100.0, help="SSIM weight in loss function")
-parser.add_argument("--dropout_train_mode", type=bool, default=True, help="Set dropout to train mode at inference")
 
 #####_________#####
 

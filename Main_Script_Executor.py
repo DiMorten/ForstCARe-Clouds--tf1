@@ -91,8 +91,7 @@ elif mode == 'infer':
                                     --batch_size 2 --epoch 60 --dataset_name MG_10m \
                                     --datasets_dir D:/Javier/Repo_Noa/SAR2Optical_Project/Datasets/ --image_size_tr 256 --output_stride 16 \
                                     --patch_overlap 0.4 --date both\
-                                    --checkpoint_dir ./checkpoint --sample_dir ./sample --test_dir ./test\
-                                    --dropout_train_mode True")
+                                    --checkpoint_dir ./checkpoint --sample_dir ./sample --test_dir ./test")
 
 
 elif mode == 'GEE_metrics':

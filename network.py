@@ -47,6 +47,7 @@ def atrous_spatial_pyramid_pooling(net, scope, rate=None, depth=256, reuse=None)
 @slim.add_arg_scope
 def Decoder(dec, scope, args, skip_connections, fine_size, reuse=None, rate_dropout=0.5, is_train=True):
     
+
     with tf1.variable_scope(scope, reuse = reuse):
 
         s = fine_size
@@ -54,7 +55,7 @@ def Decoder(dec, scope, args, skip_connections, fine_size, reuse=None, rate_drop
 
         depth = dec.get_shape()[3].value
         if 'dropout' in args.sampling_type:
-                dec = tf.layers.dropout(dec, rate_dropout, training=is_train)
+                dec = tf.layers.dropout(dec, rate_dropout, training=False)
                 # dec = tf.nn.dropout(dec, keep_prob)
         
         if args.image_size_tr == 256 and args.output_stride == 16:
@@ -103,7 +104,7 @@ def deeplab_v3(inputs, args, fine_size, is_training, reuse, rate_dropout = 0.5):
             net = end_points['generator/' + args.resnet_model + '/block4']
 
             if 'dropout' in args.sampling_type:
-                net = tf.layers.dropout(net, rate_dropout, training=is_training)
+                net = tf.layers.dropout(net, rate_dropout, training=False)
                 # net = tf.nn.dropout(net, keep_prob)
 
             net = atrous_spatial_pyramid_pooling(net, "ASPP_layer", rate = rate, depth=512, reuse=reuse)
