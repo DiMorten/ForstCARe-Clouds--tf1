@@ -104,6 +104,8 @@ class cGAN(object):
         self.checkpoint_dir = checkpoint_dir
         self.visible_bands = [2, 1, 0]
         self.dataset_name = args.dataset_name
+        self.inference_overlap_percentage = args.inference_overlap_percentage
+        self.patch_size = args.inference_patch_size
         self.build_model()
         # self.norm_routine = Clip_Norm_sen12mscr(feature_range=[-1, 1])
 
@@ -728,7 +730,6 @@ class cGAN(object):
                 ic(self.opt_path + self.opt_name[prefix] + tifStr)
                 ic(self.data_dic["opt_cloudy_" + date].transpose(2, 0, 1).astype(dtype).shape)
                 GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix] + tifStr, 
-    #            GeoReference_Raster_from_Source_data(self.opt_path + self.opt_name[prefix], 
                                                     self.data_dic["opt_cloudy_" + date].transpose(2, 0, 1).astype(dtype),
                                                     output_path + '/S2_cloudy_' + date + '_10bands.tif')
                 print("Finished saving opt_cloudy image")
@@ -742,10 +743,14 @@ class cGAN(object):
             # opt_fake = self.sess.run(self.fake_opt_t0_sample,
             #                         feed_dict={self.SAR: sar[np.newaxis, ...],
             #                                 self.OPT_cloudy: opt_cloudy[np.newaxis, ...]})
+            # overlap_percent = 0.02
+            # overlap_percent = 0.1
+            # overlap_percent = 0.138
+            
             if fake_get == True:
                 opt_fake = Image_reconstruction([self.SAR, self.OPT_cloudy], self.fake_opt_t0_sample, 
-                                                self.output_c_dim, patch_size=3840, 
-                                                overlap_percent=0.02).Inference(np.concatenate((sar, opt_cloudy), axis=2))
+                                                self.output_c_dim, patch_size=self.patch_size, 
+                                                overlap_percent=self.inference_overlap_percentage).Inference(np.concatenate((sar, opt_cloudy), axis=2))
             print("Inference complete --> {} segs".format(time.time()-start_time))
             del sar
             # 4096, 3840

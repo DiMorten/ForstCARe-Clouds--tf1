@@ -427,12 +427,12 @@ def create_dataset_coordinates(obj, prefix = 0, padding=True,
     else:
         data_dic["sar_t" + str(prefix)] = sar
     del sar
-
+    isNrwDataset = False
     # Sentinel 2
     if flag_image[1]:
         for i in range(len(obj.opt_name)): 
             ic(obj.opt_path + obj.opt_name[i] + '.tif')       
-            isNrwDataset = False
+            
             if isNrwDataset == True:
                 img = load_tiff_image(obj.opt_path + obj.opt_name[i]).astype('float32')
                 bands_res = ['60m', '10m', '10m', '10m', '20m', '20m', '20m', '10m', 
@@ -472,7 +472,6 @@ def create_dataset_coordinates(obj, prefix = 0, padding=True,
     # Sentinel 2 cloudy
     if flag_image[2]:
         for i in range(len(obj.opt_cloudy_name)):
-            isNrwDataset = False
             if isNrwDataset == True:
                 img = load_tiff_image(obj.opt_cloudy_path + obj.opt_cloudy_name[i]).astype('float32')
                 bands_res = ['60m', '10m', '10m', '10m', '20m', '20m', '20m', '10m', 
@@ -1027,7 +1026,8 @@ class Image_reconstruction(object):
 
         # Inference
         probs = np.zeros((k1*stride, k2*stride, self.output_c_dim), dtype='float32')
-
+        ic(stride, overlap, self.overlap_percent)
+        # pdb.set_trace()
         for i in range(k1):
             for j in range(k2):
                 

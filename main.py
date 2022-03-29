@@ -64,6 +64,10 @@ parser.add_argument("--mask", default='fixed', choices=['fixed', 'random', 'k-fo
 parser.add_argument("--date", default="both", choices=["both", "d0", "d1"], help="Indicate which date generate ")
 parser.add_argument("--patch_overlap", type=float, default=0.50, help="Overlap percentage between patches")
 
+parser.add_argument("--inference_overlap_percentage", type=float, default=0.138, help="Inference overlap percentage between patches")
+parser.add_argument("--inference_patch_size", type=float, default=3840, help="Inference patch size is usually larger compared to training")
+
+
 parser.add_argument("--SSIM_lambda", type=float, default=100.0, help="SSIM weight in loss function")
 
 #####_________#####
@@ -109,6 +113,8 @@ def actions():
             model.Translate_complete_image(args, date = "t1")
         elif args.phase == 'generate_complete_image_t0':
             model.Translate_complete_image(args, date = "t0")
+        elif args.phase == 'generate_complete_image_t1':
+            model.Translate_complete_image(args, date = "t1")
 
         elif args.phase == 'GEE_metrics':
             model.GEE_metrics(args, date = "t0")
